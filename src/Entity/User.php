@@ -156,12 +156,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->plainPassword = null;
     }
-
-    /**
-     * @return Collection<int, Url>
-     */
-    public function getUrls(): Collection
-    {
-        return $this->urls;
-    }
 }
