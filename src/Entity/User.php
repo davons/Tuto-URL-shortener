@@ -66,12 +66,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Link::class)]
-    private Collection $links;
-
     public function __construct()
     {
-        $this->links = new ArrayCollection();
+        $this->urls = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -161,32 +158,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Link>
+     * @return Collection<int, Url>
      */
-    public function getLinks(): Collection
+    public function getUrls(): Collection
     {
-        return $this->links;
-    }
-
-    public function addLink(Link $link): static
-    {
-        if (!$this->links->contains($link)) {
-            $this->links->add($link);
-            $link->setAuthor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLink(Link $link): static
-    {
-        if ($this->links->removeElement($link)) {
-            // set the owning side to null (unless already changed)
-            if ($link->getAuthor() === $this) {
-                $link->setAuthor(null);
-            }
-        }
-
-        return $this;
+        return $this->urls;
     }
 }
