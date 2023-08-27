@@ -1,8 +1,9 @@
 version: '3'
 
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    ports:
-      - "5432"
-###< doctrine/doctrine-bundle ###
+  mailer:
+    image: schickling/mailcatcher
+    container_name: shortify_mailcatcher
+    ports: ['49695:1025', '49378:1080']
+    networks:
+      - shortify_net
