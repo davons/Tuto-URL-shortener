@@ -6,7 +6,6 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use App\Entity\Link;
 use App\Story\DefaultLinksStory;
-use Symfony\Component\Routing\Router;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -20,7 +19,6 @@ class LinksTest extends ApiTestCase
     use ResetDatabase, Factories;
 
     private Client $client;
-    private Router $router;
 
     /**
      * @return void
