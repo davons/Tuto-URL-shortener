@@ -38,10 +38,12 @@ class Link
     private ?int $id = null;
 
     #[Groups(['link:read', 'link:create', 'link:update'])]
+    #[Assert\Url]
     #[ORM\Column(length: 255)]
     private ?string $shortLink = null;
 
     #[Groups(['link:read', 'link:create', 'link:update'])]
+    #[Assert\Url]
     #[ORM\Column(length: 255)]
     private ?string $fullLink = null;
 
@@ -53,6 +55,7 @@ class Link
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'links')]
     private ?User $owner = null;
 
