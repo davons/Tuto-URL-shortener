@@ -1,7 +1,7 @@
 api_platform:
     title: URLShortify
     version: 1.0.0
-    description: Manage URL Shortify.
+    description: Manage your with URLShortify.
     swagger:
          api_keys:
              JWT:

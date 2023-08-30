@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\LinkProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LinkRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -17,14 +18,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(),
+        new Post(processor: LinkProcessor::class),
         new Get(),
-        new Put(),
-        new Patch(),
-        new Delete(),
+        new Put(processor: LinkProcessor::class),
+        new Patch(processor: LinkProcessor::class),
+        new Delete(processor: LinkProcessor::class),
     ],
     normalizationContext: ['groups' => ['link:read']],
     denormalizationContext: ['groups' => ['link:create', 'link:update']],
+    security: ("is_granted('ROLE_USER')"),
 )]
 
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
@@ -54,6 +56,7 @@ class Link
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[Groups(['link:read'])]
     #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'links')]
     private ?User $owner = null;

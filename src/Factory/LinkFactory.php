@@ -51,6 +51,7 @@ final class LinkFactory extends ModelFactory
             'shortLink' => self::faker()->url(),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'owner' => UserFactory::new(),
         ];
     }
 

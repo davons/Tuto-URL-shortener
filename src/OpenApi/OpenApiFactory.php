@@ -19,8 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class OpenApiFactory implements OpenApiFactoryInterface
 {
     public function __construct(private readonly OpenApiFactoryInterface $decorated)
-    {
-    }
+    {}
 
     /**
      * {@inheritdoc}
@@ -28,7 +27,63 @@ final class OpenApiFactory implements OpenApiFactoryInterface
     public function __invoke(array $context = []): OpenApi
     {
         $openApi = ($this->decorated)($context);
+
+        $schemas = $openApi->getComponents()->getSchemas();
+
+        $schemas['Credentials'] = new \ArrayObject([
+            'type' => 'object',
+            'properties' => [
+                'email' => [
+                    'type' => 'string',
+                    'example' => 'johndoe@example.com',
+                ],
+                'password' => [
+                    'type' => 'string',
+                    'example' => 'apassword',
+                ],
+            ],
+        ]);
+
+        $schemas = $openApi->getComponents()->getSecuritySchemes() ?? [];
+        $schemas['JWT'] = new \ArrayObject([
+            'type' => 'http',
+            'scheme' => 'bearer',
+            'bearerFormat' => 'JWT',
+        ]);
+
         $paths = $openApi->getPaths();
+
+        $paths->addPath(
+            '/api/me', (new PathItem())
+                ->withGet(
+                    (new OpenApiOperation())
+                        ->withOperationId('me')
+                        ->withTags(['Profile'])
+                        ->withSummary('Get current user connected.')
+                        ->withResponse(
+                            Response::HTTP_OK,
+                            (new OpenApiResponse())
+                                ->withContent(new \ArrayObject([
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                            'properties' => [
+                                                'id' => [
+                                                    'type' => 'string',
+                                                ],
+                                                'email' => [
+                                                    'type' => 'string',
+                                                ],
+                                                'roles' => [
+                                                    'type' => 'array',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ]))
+                        )
+                )
+        );
 
         return $openApi;
     }
