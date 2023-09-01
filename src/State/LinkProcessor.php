@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\DeleteOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use ApiPlatform\Metadata\Post;
 
 final class LinkProcessor implements ProcessorInterface
 {
@@ -28,6 +29,14 @@ final class LinkProcessor implements ProcessorInterface
         }
 
         $data->setOwner($this->security->getUser());
+       
+        if ($operation instanceof Post) {
+            $data->setCreatedAt(new \DateTimeImmutable('now'));
+        }
+
+        if ($operation instanceof Put) {
+            $data->setUpdatedAt(new \DateTimeImmutable('now'));
+        }
 
         return $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }

@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LinkRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ApiResource(
     operations: [
@@ -38,7 +39,7 @@ class Link
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['link:read', 'link:create', 'link:update'])]
+    #[Groups(['link:read'])]
     #[Assert\Url]
     #[ORM\Column(length: 255)]
     private ?string $shortLink = null;
@@ -57,8 +58,8 @@ class Link
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[Groups(['link:read'])]
-    #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'links')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
     public function getId(): ?int

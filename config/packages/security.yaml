@@ -29,8 +29,7 @@ security:
             jwt: ~
 
     access_control:
-        - { path: ^/api/(login|refresh), roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: PUBLIC_ACCESS }
+        - { path: ^/api$, roles: PUBLIC_ACCESS }
 
 
 when@test:
