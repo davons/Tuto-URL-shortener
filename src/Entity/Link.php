@@ -15,6 +15,8 @@ use App\Repository\LinkRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 #[ApiResource(
     operations: [
@@ -33,36 +35,37 @@ use Gedmo\Mapping\Annotation as Gedmo;
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
 class Link
 {
-    #[Groups(['link:read'])]
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['link:read'])]
+    private ?Uuid $id = null;
+    
+    #[ORM\Column(length: 255)]
     #[Groups(['link:read'])]
     #[Assert\Url]
-    #[ORM\Column(length: 255)]
     private ?string $shortLink = null;
 
-    #[Groups(['link:read', 'link:create', 'link:update'])]
-    #[Assert\Url]
     #[ORM\Column(length: 255)]
+    #[Assert\Url]
+    #[Groups(['link:read', 'link:create', 'link:update'])]
     private ?string $fullLink = null;
 
-    #[Groups(['link:read'])]
     #[ORM\Column]
+    #[Groups(['link:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[Groups(['link:read'])]
     #[ORM\Column(nullable: true)]
+    #[Groups(['link:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[Groups(['link:read'])]
     #[ORM\ManyToOne(inversedBy: 'links')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['link:read'])]
     private ?User $owner = null;
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

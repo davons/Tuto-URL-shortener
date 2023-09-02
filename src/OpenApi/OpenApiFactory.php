@@ -54,11 +54,11 @@ final class OpenApiFactory implements OpenApiFactoryInterface
         $paths = $openApi->getPaths();
 
         $paths->addPath(
-            '/api/me', (new PathItem())
+            '/api/profile', (new PathItem())
                 ->withGet(
                     (new OpenApiOperation())
-                        ->withOperationId('me')
-                        ->withTags(['Profile'])
+                        ->withOperationId('profile')
+                        ->withTags(['User'])
                         ->withSummary('Get current user connected.')
                         ->withResponse(
                             Response::HTTP_OK,
@@ -75,7 +75,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface
                                                     'type' => 'string',
                                                 ],
                                                 'roles' => [
-                                                    'type' => 'array',
+                                                    'type' => 'string',
                                                 ],
                                             ],
                                         ],

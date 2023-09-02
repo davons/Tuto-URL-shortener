@@ -21,5 +21,4 @@
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-.idea/php.xml
-.idea/phpspec.xml
+.idea/

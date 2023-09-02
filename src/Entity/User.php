@@ -9,9 +9,10 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\UserResetPasswordProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-use App\State\UserPasswordHasher;
+use App\State\UserPasswordHasherProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -19,15 +20,21 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use App\Dto\UserResetPasswordDto;
 
 #[ApiResource(
     operations: [
         new GetCollection(security: ("is_granted('ROLE_ADMIN')")),
-        new Post(validationContext: ['groups' => ['Default', 'user:create']], processor: UserPasswordHasher::class),
-        new Get(),
-        new Put(processor: UserPasswordHasher::class),
-        new Patch(processor: UserPasswordHasher::class),
-        new Delete(),
+        new Post(uriTemplate: '/register', validationContext: ['groups' => ['Default', 'user:create']], processor: UserPasswordHasherProcessor::class),
+        new Post(uriTemplate: '/forgot-password'),
+        new Post(uriTemplate: '/change-password', security: ("is_granted('ROLE_USER)")),
+        new Post(uriTemplate: '/reset-password', input: UserResetPasswordDto::class, processor: UserResetPasswordProcessor::class),
+        new Get(security: ("is_granted('ROLE_USER)")),
+        new Put(security: ("is_granted('ROLE_USER)"), processor: UserPasswordHasherProcessor::class),
+        new Patch(security: ("is_granted('ROLE_USER)"), processor: UserPasswordHasherProcessor::class),
+        new Delete(security: ("is_granted('ROLE_USER)")),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:create', 'user:update']],
@@ -37,21 +44,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups(['user:read'])]
     #[ORM\Id]
-    #[ORM\Column(type: 'integer')]
-    #[ORM\GeneratedValue]
-    private ?int $id = null;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['user:read'])]
+    private ?Uuid $id = null;
 
+    #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups(['user:read', 'user:create', 'user:update'])]
-    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
     #[Groups(['user:read', 'user:create', 'user:update'])]
-    #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -67,12 +75,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Link::class)]
     private Collection $links;
 
+    #[ORM\Column]
+    #[Groups(['user:read'])]
+    private ?bool $isActive = null;
+
     public function __construct()
     {
         $this->links = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
@@ -184,6 +196,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $link->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
