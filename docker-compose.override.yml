@@ -7,3 +7,8 @@ services:
     ports: ['49695:1025', '49378:1080']
     networks:
       - shortify_net
+###> symfony/mailer ###
+  mailer:
+    image: schickling/mailcatcher
+    ports: ["1025", "1080"]
+###< symfony/mailer ###

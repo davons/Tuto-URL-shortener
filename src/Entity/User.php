@@ -9,10 +9,13 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Dto\UserChangePasswordDto;
+use App\Dto\UserForgotPasswordDto;
+use App\State\UserForgotPasswordProcessor;
 use App\State\UserResetPasswordProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-use App\State\UserPasswordHasherProcessor;
+use App\State\UserProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -27,13 +30,38 @@ use App\Dto\UserResetPasswordDto;
 #[ApiResource(
     operations: [
         new GetCollection(security: ("is_granted('ROLE_ADMIN')")),
-        new Post(uriTemplate: '/register', validationContext: ['groups' => ['Default', 'user:create']], processor: UserPasswordHasherProcessor::class),
-        new Post(uriTemplate: '/forgot-password'),
-        new Post(uriTemplate: '/change-password', security: ("is_granted('ROLE_USER)")),
-        new Post(uriTemplate: '/reset-password', input: UserResetPasswordDto::class, processor: UserResetPasswordProcessor::class),
-        new Get(security: ("is_granted('ROLE_USER)")),
-        new Put(security: ("is_granted('ROLE_USER)"), processor: UserPasswordHasherProcessor::class),
-        new Patch(security: ("is_granted('ROLE_USER)"), processor: UserPasswordHasherProcessor::class),
+        new Post(
+            uriTemplate: '/register',
+            validationContext: ['groups' => ['Default', 'user:create']],
+            processor: UserProcessor::class
+        ),
+        new Post(
+            uriTemplate: '/forgot-password',
+            input: UserForgotPasswordDto::class,
+            processor: UserForgotPasswordProcessor::class
+        ),
+        new Post(
+            uriTemplate: '/change-password',
+            security: ("is_granted('ROLE_USER)"),
+            input: UserChangePasswordDto::class,
+            processor: UserResetPasswordProcessor::class
+        ),
+        new Post(
+            uriTemplate: '/reset-password',
+            input: UserResetPasswordDto::class,
+            processor: UserResetPasswordProcessor::class
+        ),
+        new Get(
+            security: ("is_granted('ROLE_USER)")
+        ),
+        new Put(
+            security: ("is_granted('ROLE_USER)"),
+            processor: UserProcessor::class
+        ),
+        new Patch(
+            security: ("is_granted('ROLE_USER)"),
+            processor: UserProcessor::class
+        ),
         new Delete(security: ("is_granted('ROLE_USER)")),
     ],
     normalizationContext: ['groups' => ['user:read']],

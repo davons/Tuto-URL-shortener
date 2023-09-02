@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 
 final class LinkProcessor implements ProcessorInterface
 {

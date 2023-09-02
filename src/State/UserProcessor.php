@@ -1,15 +1,18 @@
 <?php
 # api/src/State/UserPasswordHasherProcessor.php
 namespace App\State;
+
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Service\Mailer;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class UserPasswordHasherProcessor implements ProcessorInterface
+final class UserProcessor implements ProcessorInterface
 {
     public function __construct(
         private readonly ProcessorInterface $processor, 
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly Mailer $mailer
     )
     {}
 
@@ -25,8 +28,9 @@ final class UserPasswordHasherProcessor implements ProcessorInterface
         $data->setPassword($hashedPassword);
         $data->eraseCredentials();
         $data->setRoles(['ROLE_USER']);
-        $data->setActive(false);
-        
-        return $this->processor->process($data, $operation, $uriVariables, $context);
+        $data->setActive(true);
+        $result = $this->processor->process($data, $operation, $uriVariables, $context);
+        $this->mailer->sendWelcomeMessage($data);
+        return $result;
     }
 }
