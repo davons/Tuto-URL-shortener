@@ -43,7 +43,7 @@ class Link
     private ?Uuid $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['link:read'])]
+    #[Groups(['link:read', 'link:create', 'link:update'])]
     #[Assert\Url]
     private ?string $shortLink = null;
 
