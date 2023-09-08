@@ -1,13 +1,13 @@
 {% extends 'email/layout.html.twig' %}
 {% block body %}
 <div class="content">
-    <h1 class="text-center">Ravi de vous rencontrer {{ user.name }}!</h1>
+    <h1 class="text-center">Ravi de vous rencontrer {{ user.name|upper }}!</h1>
     <p class="block">
-        Bienvenu sur <strong>URLShortify</strong>. <br/>
+        Bienvenu sur <strong>URLShortify</strong>. <br/><br/>
         Rejoignez la communauté de l'URLShortify et commencez à créer votre premier lien.
     </p>
     <p class="block text-center">
-        <a href="" class="btn">Créer un lien</a>
+        <a href="" class="btn">Activer mon compte</a>
     </p>
 </div>
 {% endblock %}

@@ -6,7 +6,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\State\LinkProcessor;
@@ -14,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LinkRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 
@@ -24,7 +22,6 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
         new Post(processor: LinkProcessor::class),
         new Get(),
         new Put(processor: LinkProcessor::class),
-        new Patch(processor: LinkProcessor::class),
         new Delete(processor: LinkProcessor::class),
     ],
     normalizationContext: ['groups' => ['link:read']],
@@ -43,12 +40,12 @@ class Link
     private ?Uuid $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['link:read', 'link:create', 'link:update'])]
-    #[Assert\Url]
     private ?string $shortLink = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Url]
+    #[Assert\Url(
+        message: "L'URL {{ value }} n'est pas valide.",
+    )]
     #[Groups(['link:read', 'link:create', 'link:update'])]
     private ?string $fullLink = null;
 

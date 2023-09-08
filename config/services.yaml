@@ -28,4 +28,5 @@ services:
             $removeProcessor: '@api_platform.doctrine.orm.state.remove_processor'
     App\State\UserProcessor:
         bind:
-            $processor: '@api_platform.doctrine.orm.state.persist_processor'
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+            $removeProcessor: '@api_platform.doctrine.orm.state.remove_processor'
