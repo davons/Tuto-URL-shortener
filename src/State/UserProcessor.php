@@ -30,7 +30,7 @@ final class UserProcessor implements ProcessorInterface
         // Create
         if ($operation instanceof Post) {
             $data->setRoles(['ROLE_USER']);
-            $data->setActive(false);
+            $data->setActive(true);
             $hashedPassword = $this->passwordHasher->hashPassword(
                 $data,
                 $data->getPlainPassword()

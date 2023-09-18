@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Put;
 use App\State\LinkProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LinkRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Uuid;
@@ -40,6 +41,7 @@ class Link
     private ?Uuid $id = null;
     
     #[ORM\Column(length: 255)]
+    #[Groups(['link:read', 'link:create'])]
     private ?string $shortLink = null;
 
     #[ORM\Column(length: 255)]
